@@ -6,6 +6,7 @@
  */
 
 #include "mainApp.hpp"
+#include "editPedal.hpp"
 #include "qspi_flash.hpp"
 #include <cstdio>
 
@@ -32,31 +33,13 @@ void mainApp(void)
 
     EffectsChain chain;
 
-    chain.setPedal(0, PedalType::REVERB);
-    chain.getPedal(0)->volume = 0.8f;
-    chain.getPedal(0)->depth = 0.5f;
-    chain.getPedal(0)->rate = 0.2f;
-    chain.getPedal(0)->mix = 0.7f;
-
-    chain.setPedal(1, PedalType::OVERDRIVE_DISTORTION);
-    chain.getPedal(1)->volume = 0.6f;
-    chain.getPedal(1)->gain = 0.9f;
-    chain.getPedal(1)->tone = 0.3f;
-    chain.getPedal(1)->level = 0.4f;
-
+    chain.setPedal(0, PedalType::OVERDRIVE_DISTORTION);
+    chain.setPedal(1, PedalType::REVERB);
     chain.setPedal(2, PedalType::ECHO);
-    chain.getPedal(2)->volume = 0.5f;
-    chain.getPedal(2)->delayTime = 0.25f;
-    chain.getPedal(2)->feedback = 0.6f;
-    chain.getPedal(2)->mix = 0.8f;
-
     chain.setPedal(3, PedalType::PASS_THROUGH);
-    chain.getPedal(3)->volume = 1.0f;
-    chain.getPedal(3)->highs = 0.1f;
-    chain.getPedal(3)->lows = 0.2f;
-    chain.getPedal(3)->level = 0.3f;
 
     chain.draw();
+
     HAL_Delay(1000);    
 
     if (QSPIFlash::saveEffectsChain(&chain) != HAL_OK) {
@@ -64,22 +47,19 @@ void mainApp(void)
     }
     
     EffectsChain loadedChain;
-    loadedChain.selectedPedal = 0;
 
     if (QSPIFlash::loadEffectsChain(&loadedChain) != HAL_OK) {
         Error_Handler();
     }
+    HAL_Delay(2000);
 
-
-    HAL_Delay(3000);
-    Display::drawBitmap(edit_pedal_bitmap, 0, 0);
-    Display::drawBitmap(loadedChain.getPedal(loadedChain.selectedPedal)->getImage(), 20, 11);
-    Display::drawString(loadedChain.getPedal(loadedChain.selectedPedal)->getName(), 60, 11);
-
+    uint8_t i=0;
     while(1)
     {
-
- 
+      loadedChain.selectedPedal = i;
+      displaySelectedPedal(&loadedChain);
+      i = (i + 1) % (static_cast<uint8_t>(PedalType::PASS_THROUGH) + 1); 
+      HAL_Delay(2000);
     }
 
 }
