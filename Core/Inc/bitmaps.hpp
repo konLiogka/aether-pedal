@@ -19,13 +19,20 @@ constexpr uint16_t  PEDAL_PAGE_START   = 10;
 constexpr uint16_t  PEDAL1_X_POS_START = 13;
 constexpr uint16_t  PEDAL2_X_POS_START = 39;
 constexpr uint16_t  PEDAL3_X_POS_START = 65;
-constexpr uint16_t PEDAL4_X_POS_START  = 91;
+constexpr uint16_t  PEDAL4_X_POS_START = 91;
 
 struct Bitmap {
     const uint8_t* data;
     uint16_t width;
     uint16_t height;
     const char* name;
+};
+
+const int pedalPositionsX[] = {
+    PEDAL1_X_POS_START,
+    PEDAL2_X_POS_START,
+    PEDAL3_X_POS_START,
+    PEDAL4_X_POS_START
 };
 
 extern const uint8_t font_5x7[][5];
@@ -35,6 +42,9 @@ extern const Bitmap  base_chain_bitmap;
 
 extern const uint8_t edit_pedal[FULL_SCREEN];
 extern const Bitmap  edit_pedal_bitmap;
+
+extern const uint8_t mod_pedal[FULL_SCREEN];
+extern const Bitmap  mod_pedal_bitmap;
 
 extern const uint8_t overdrive_distortion_data[PEDAL_SIZE];
 extern const Bitmap  overdrive_distortion_bitmap;
@@ -56,6 +66,24 @@ extern const uint8_t vol_4[VOLUME_BAR_SIZE];
 extern const uint8_t vol_5[VOLUME_BAR_SIZE];
 extern const uint8_t vol_6[VOLUME_BAR_SIZE];
 extern const uint8_t vol_7[VOLUME_BAR_SIZE];
+
+extern const Bitmap vol_0_bitmap;
+extern const Bitmap vol_1_bitmap;
+extern const Bitmap vol_2_bitmap;
+extern const Bitmap vol_3_bitmap;
+extern const Bitmap vol_4_bitmap;
+extern const Bitmap vol_5_bitmap;
+extern const Bitmap vol_6_bitmap;
+extern const Bitmap vol_7_bitmap;
+
+extern const uint8_t arrow_right[8*16];
+extern const Bitmap arrow_right_bitmap;
+
+extern const uint8_t arrow_left[8*16];
+extern const Bitmap arrow_left_bitmap;
+
+extern const uint8_t mod_pedal_val[30*36];
+extern const Bitmap mod_pedal_val_bitmap;
 
 extern const Bitmap pedals[4];
 

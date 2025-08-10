@@ -102,6 +102,49 @@ void drawString(const char* str, uint8_t x, uint8_t page) {
     }
 }
 
+void drawDigit(uint8_t digit, uint8_t x, uint8_t page) {
+    if (digit > 9) return;  
+    
+    int index = digit + 16;  
+    setCursor(x, page);
+    writeData((uint8_t *)font_5x7[index], 5);
+    
+    uint8_t space = 0x00;
+    writeData(&space, 1);
+}
+
+void drawFloat(float value, uint8_t x, uint8_t page) {
+    int intPart = (int)value;
+    int fracPart = (int)((value - intPart) * 100);  
+    
+    uint8_t currentX = x;
+    
+    if (intPart == 0) {
+        drawDigit(0, currentX, page);
+        currentX += 6;
+    } else {
+        if (intPart >= 100) {
+            drawDigit(intPart / 100, currentX, page);
+            currentX += 6;
+            intPart %= 100;
+        }
+        if (intPart >= 10 || (intPart < 10 && currentX > x)) { // Draw tens if we have hundreds or if tens digit exists
+            drawDigit(intPart / 10, currentX, page);
+            currentX += 6;
+            intPart %= 10;
+        }
+        drawDigit(intPart, currentX, page);
+        currentX += 6;
+    }
+    
+    drawChar('.', currentX, page);
+    currentX += 6;
+    
+    drawDigit(fracPart / 10, currentX, page);
+    currentX += 6;
+    drawDigit(fracPart % 10, currentX, page);
+}
+
 void drawBitmap(const Bitmap& bmp, uint8_t x, uint8_t pageStart) {
     uint16_t byteIndex = 0;
     uint8_t pagesNeeded = (bmp.height + 7) / 8;  

@@ -2,10 +2,10 @@
 #include "display.hpp"
 
 EffectsChain::EffectsChain() {
-    pedals[0] = new Pedal(PedalType::PASS_THROUGH);
-    pedals[1] = new Pedal(PedalType::PASS_THROUGH);
-    pedals[2] = new Pedal(PedalType::PASS_THROUGH);
-    pedals[3] = new Pedal(PedalType::PASS_THROUGH);
+    pedals[0] = Pedal::createPedal(PedalType::PASS_THROUGH);
+    pedals[1] = Pedal::createPedal(PedalType::PASS_THROUGH);
+    pedals[2] = Pedal::createPedal(PedalType::PASS_THROUGH);
+    pedals[3] = Pedal::createPedal(PedalType::PASS_THROUGH);
 }
 
 EffectsChain::~EffectsChain() {
@@ -18,35 +18,7 @@ void EffectsChain::setPedal(int index, PedalType type) {
     if (index < 0 || index >= 4) return;
 
     delete pedals[index]; 
-    pedals[index] = new Pedal(type);
-
-    // Set default values for each pedal type
-    switch (type) {
-        case PedalType::OVERDRIVE_DISTORTION:
-            pedals[index]->volume = 0.5f;
-            pedals[index]->gain = 0.7f;
-            pedals[index]->tone = 0.5f;
-            pedals[index]->level = 0.5f;
-            break;
-        case PedalType::ECHO:
-            pedals[index]->volume = 0.5f;       
-            pedals[index]->delayTime = 0.5f;
-            pedals[index]->feedback = 0.5f;
-            pedals[index]->mix = 0.5f;  
-            break;
-        case PedalType::REVERB:
-            pedals[index]->volume = 0.5f;   
-            pedals[index]->depth = 0.5f;
-            pedals[index]->rate = 0.5f;
-            pedals[index]->mix = 0.5f;
-            break;
-        case PedalType::PASS_THROUGH:
-            pedals[index]->volume = 1.0f; // Full volume for pass-through
-            pedals[index]->highs = 0.5f;
-            pedals[index]->mids = 0.5f;
-            pedals[index]->lows = 0.5f;
-            break;
-    }
+    pedals[index] = Pedal::createPedal(type);
 }
 
 Pedal* EffectsChain::getPedal(int index) const {

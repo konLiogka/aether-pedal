@@ -7,6 +7,7 @@
 
 #include "mainApp.hpp"
 #include "editPedal.hpp"
+#include "modPedal.hpp"
 #include "qspi_flash.hpp"
 #include <cstdio>
 
@@ -39,6 +40,7 @@ void mainApp(void)
     chain.setPedal(3, PedalType::PASS_THROUGH);
 
     chain.draw();
+    Display::setContrast(0x04);
 
     HAL_Delay(1000);    
 
@@ -52,15 +54,26 @@ void mainApp(void)
         Error_Handler();
     }
     HAL_Delay(2000);
+    Display::setContrast(0x04);
+
 
     uint8_t i=0;
-    while(1)
+    while(true)
     {
-      loadedChain.selectedPedal = i;
-      displaySelectedPedal(&loadedChain);
-      i = (i + 1) % (static_cast<uint8_t>(PedalType::PASS_THROUGH) + 1); 
-      HAL_Delay(2000);
+        loadedChain.selectedPedal = i;
+        displaySelectedPedal(&loadedChain);
+        i = (i + 1) % (static_cast<uint8_t>(PedalType::PASS_THROUGH) + 1); 
+        Display::setContrast(0x04);
+
+        HAL_Delay(2000);
+
+        if(i==3)
+        {
+            displayPedalSettings(loadedChain.getPedal(0));  
+            HAL_Delay(4000);
+        }
     }
+      
 
 }
 

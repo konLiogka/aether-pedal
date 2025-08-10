@@ -29,6 +29,8 @@ namespace Display {
     void setCursor(uint8_t column, uint8_t page);
     void drawChar(uint8_t c, uint8_t x, uint8_t page);
     void drawString(const char* str, uint8_t x, uint8_t page);
+    void drawDigit(uint8_t digit, uint8_t x, uint8_t page);
+    void drawFloat(float value, uint8_t x, uint8_t page);
     void drawBitmap(const Bitmap& bmp, uint8_t x, uint8_t pageStart);
     void clear(void);
 }
