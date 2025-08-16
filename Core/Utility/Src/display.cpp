@@ -10,6 +10,8 @@
 
 namespace Display {
 
+uint8_t frameBuffer[FULL_SCREEN] = {0};
+
 void writeCommand(uint8_t cmd) {
     HAL_GPIO_WritePin(OLED_DC_Port, OLED_DC_Pin, GPIO_PIN_RESET);
     HAL_GPIO_WritePin(OLED_CS_Port, OLED_CS_Pin, GPIO_PIN_RESET);
@@ -25,11 +27,17 @@ void reset() {
 }
 
 void clear(void) {
-    setCursor(0, 0);
-    uint8_t zero = 0x00;
+    // Clear frame buffer
     for(uint16_t i = 0; i < FULL_SCREEN; i++) {
-        writeData(&zero, 1);
+        frameBuffer[i] = 0x00;
     }
+    // Update display
+    updateDisplay();
+}
+
+void updateDisplay() {
+    setCursor(0, 0);
+    writeData(frameBuffer, FULL_SCREEN);
 }
 
 void init() {
@@ -82,6 +90,7 @@ int getFontIndex(char c) {
         return -1;
     return c - 0x20;
 }
+
 
 void drawChar(char c, uint8_t x, uint8_t page) {
     int index = getFontIndex(c);

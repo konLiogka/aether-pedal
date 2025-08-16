@@ -11,15 +11,19 @@ constexpr uint16_t  PEDAL_WIDTH  = 24;
 constexpr uint16_t  PEDAL_HEIGHT = 34;
 constexpr uint16_t  PEDAL_SIZE   = (PEDAL_WIDTH * PEDAL_HEIGHT);
 
-constexpr uint16_t VOLUME_BAR_WIDTH  = 5;
-constexpr uint16_t VOLUME_BAR_HEIGHT = 32;
+constexpr uint8_t VOLUME_BAR_WIDTH  = 5;
+constexpr uint8_t VOLUME_BAR_HEIGHT = 32;
 constexpr uint16_t VOLUME_BAR_SIZE   = (VOLUME_BAR_WIDTH * VOLUME_BAR_HEIGHT);
 
-constexpr uint16_t  PEDAL_PAGE_START   = 10;
-constexpr uint16_t  PEDAL1_X_POS_START = 13;
-constexpr uint16_t  PEDAL2_X_POS_START = 39;
-constexpr uint16_t  PEDAL3_X_POS_START = 65;
-constexpr uint16_t  PEDAL4_X_POS_START = 91;
+constexpr uint8_t MOD_BAR_WIDTH  = 33;
+constexpr uint8_t MOD_BAR_HEIGHT = 36;
+constexpr uint16_t MOD_BAR_SIZE = (MOD_BAR_WIDTH * MOD_BAR_HEIGHT);
+
+constexpr uint8_t  PEDAL_PAGE_START   = 10;
+constexpr uint8_t  PEDAL1_X_POS_START = 13;
+constexpr uint8_t  PEDAL2_X_POS_START = 39;
+constexpr uint8_t  PEDAL3_X_POS_START = 65;
+constexpr uint8_t  PEDAL4_X_POS_START = 91;
 
 struct Bitmap {
     const uint8_t* data;
@@ -82,8 +86,29 @@ extern const Bitmap arrow_right_bitmap;
 extern const uint8_t arrow_left[8*16];
 extern const Bitmap arrow_left_bitmap;
 
-extern const uint8_t mod_pedal_val[30*36];
-extern const Bitmap mod_pedal_val_bitmap;
+extern const uint8_t mod_pedal_val_0[MOD_BAR_SIZE];
+extern const uint8_t mod_pedal_val_1[MOD_BAR_SIZE];
+extern const uint8_t mod_pedal_val_2[MOD_BAR_SIZE];
+extern const uint8_t mod_pedal_val_3[MOD_BAR_SIZE];
+extern const uint8_t mod_pedal_val_4[MOD_BAR_SIZE];
+extern const uint8_t mod_pedal_val_5[MOD_BAR_SIZE];
+extern const uint8_t mod_pedal_val_6[MOD_BAR_SIZE];
+extern const uint8_t mod_pedal_val_7[MOD_BAR_SIZE];
+extern const uint8_t mod_pedal_val_8[MOD_BAR_SIZE];
+extern const uint8_t mod_pedal_val_9[MOD_BAR_SIZE];
+extern const uint8_t mod_pedal_val_10[MOD_BAR_SIZE];
+
+extern const Bitmap mod_pedal_val_bitmap_0;
+extern const Bitmap mod_pedal_val_bitmap_1;
+extern const Bitmap mod_pedal_val_bitmap_2;
+extern const Bitmap mod_pedal_val_bitmap_3;
+extern const Bitmap mod_pedal_val_bitmap_4;
+extern const Bitmap mod_pedal_val_bitmap_5;
+extern const Bitmap mod_pedal_val_bitmap_6;
+extern const Bitmap mod_pedal_val_bitmap_7;
+extern const Bitmap mod_pedal_val_bitmap_8;
+extern const Bitmap mod_pedal_val_bitmap_9;
+extern const Bitmap mod_pedal_val_bitmap_10;
 
 extern const Bitmap pedals[4];
 

@@ -65,11 +65,13 @@ void mainApp(void)
         i = (i + 1) % (static_cast<uint8_t>(PedalType::PASS_THROUGH) + 1); 
         Display::setContrast(0x04);
 
-        HAL_Delay(2000);
+        HAL_Delay(1000);
 
         if(i==3)
         {
-            displayPedalSettings(loadedChain.getPedal(0));  
+            displayPedalSettings(loadedChain.getPedal(0), 0);  
+            HAL_Delay(4000);
+            displayPedalSettings(loadedChain.getPedal(0), 1);  
             HAL_Delay(4000);
         }
     }
