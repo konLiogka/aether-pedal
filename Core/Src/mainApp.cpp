@@ -42,7 +42,7 @@ void mainApp(void)
     chain.draw();
     Display::setContrast(0x04);
 
-    HAL_Delay(1000);    
+    HAL_Delay(1000);
 
     if (QSPIFlash::saveEffectsChain(&chain) != HAL_OK) {
         Error_Handler();
@@ -54,7 +54,6 @@ void mainApp(void)
         Error_Handler();
     }
     HAL_Delay(2000);
-    Display::setContrast(0x04);
 
 
     uint8_t i=0;
@@ -62,8 +61,7 @@ void mainApp(void)
     {
         loadedChain.selectedPedal = i;
         displaySelectedPedal(&loadedChain);
-        i = (i + 1) % (static_cast<uint8_t>(PedalType::PASS_THROUGH) + 1); 
-        Display::setContrast(0x04);
+        i = (i + 1) % (static_cast<uint8_t>(PedalType::PASS_THROUGH) + 1);
 
         HAL_Delay(1000);
 
@@ -71,6 +69,7 @@ void mainApp(void)
         {
             displayPedalSettings(loadedChain.getPedal(0), 0);  
             HAL_Delay(4000);
+             Display::setContrast(0x01);
             displayPedalSettings(loadedChain.getPedal(0), 1);  
             HAL_Delay(4000);
         }
