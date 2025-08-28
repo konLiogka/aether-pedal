@@ -16,12 +16,10 @@
 uint16_t adc_buf[BUFFER_SIZE];
 uint16_t dac_buf[BUFFER_SIZE];
  
- 
- 
 void mainApp(void)
 {
-	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buf, BUFFER_SIZE);
-	HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t*)dac_buf, BUFFER_SIZE, DAC_ALIGN_12B_R);
+	// HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buf, BUFFER_SIZE);
+	// HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t*)dac_buf, BUFFER_SIZE, DAC_ALIGN_12B_R);
 
     Display::init();
     Display::clear();
@@ -40,7 +38,6 @@ void mainApp(void)
     chain.setPedal(3, PedalType::PASS_THROUGH);
 
     chain.draw();
-    Display::setContrast(0x04);
 
     HAL_Delay(1000);
 
@@ -67,11 +64,15 @@ void mainApp(void)
 
         if(i==3)
         {
+            Display::setBrightness(0x40);
+
             displayPedalSettings(loadedChain.getPedal(0), 0);  
             HAL_Delay(4000);
-             Display::setContrast(0x01);
-            displayPedalSettings(loadedChain.getPedal(0), 1);  
+            displayPedalSettings(loadedChain.getPedal(0), 1);
+            Display::setBrightness(0x10);
             HAL_Delay(4000);
+
+
         }
     }
       

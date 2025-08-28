@@ -44,9 +44,9 @@ void init() {
     writeCommand(0xA1); 					// Segment remap
     writeCommand(0xC8); 					// COM scan direction remapped
     writeCommand(0xDA); writeCommand(0x12); // COM pins
-    writeCommand(0x81); writeCommand(0x04); // Contrast (increased from 0x01 to 0x20 for visibility)
-    writeCommand(0xD9); writeCommand(0x13); // Precharge  
-    writeCommand(0xDB); writeCommand(0x20); // VCOM deselect level (lower voltage)
+    writeCommand(0x81); writeCommand(0x40); // Contrast (increased from 0x01 to 0x20 for visibility)
+    writeCommand(0xD9); writeCommand(0x13); // Precharge
+    writeCommand(0xDB); writeCommand(0x40); // VCOM deselect level (lower voltage)
     writeCommand(0xA4); 					// Resume RAM content display
     writeCommand(0xA6); 					// Normal display
     writeCommand(0x2E); 					// Deactivate scroll
@@ -54,11 +54,10 @@ void init() {
 }
 
 
-void setContrast(uint8_t level)
+void setBrightness(uint8_t level)
 {
     writeCommand(0x81);   
     writeCommand(level); 
-}
 }
 
 void writeData(uint8_t* data, uint16_t size) {

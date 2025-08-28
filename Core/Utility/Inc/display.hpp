@@ -27,7 +27,7 @@ extern SPI_HandleTypeDef hspi1;
 
 namespace Display {
     void init();
-    void setContrast(uint8_t level);
+    void setBrightness(uint8_t level);
     void writeCommand(uint8_t cmd);
     void writeData(uint8_t* data, uint16_t size);
     void reset();
