@@ -38,6 +38,8 @@ namespace Display {
     void drawFloat(float value, uint8_t x, uint8_t page);
     void drawBitmap(const Bitmap& bmp, uint8_t x, uint8_t pageStart);
     void clear(void);
+    void displayError(const char* area, uint8_t errorCode);
+    void printf(uint8_t x, uint8_t page, const char* format, ...);
     extern uint8_t frameBuffer[FULL_SCREEN];
 }
 

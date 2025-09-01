@@ -13,6 +13,7 @@ void displaySelectedPedal(EffectsChain *selectedChain)
     auto* pedal = selectedChain->getPedal(selectedChain->selectedPedal);
     const Bitmap& bmp = pedal->getImage();
     const char* name  = pedal->getName();
+    Display::clear();
 
     Display::drawBitmap(edit_pedal_bitmap, 0, 0);
     Display::drawBitmap(bmp, 20, PEDAL_PAGE_START);

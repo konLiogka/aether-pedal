@@ -32,6 +32,7 @@ void drawValBar(float val, uint8_t x)
 void displayPedalSettings(Pedal *selectedPedal, uint8_t page)
 {
     if (selectedPedal == nullptr) return;
+    Display::clear();
 
     Display::drawBitmap(mod_pedal_bitmap, 0, 0);
 
@@ -46,8 +47,6 @@ void displayPedalSettings(Pedal *selectedPedal, uint8_t page)
         index = 3;
     }
 
-
-
     for (uint8_t i = 0; i < 3; i++) {
         if (i + index >= numParams) break;  
         uint8_t bitmap_x = (i % 3) * 40 + 10;
@@ -56,7 +55,7 @@ void displayPedalSettings(Pedal *selectedPedal, uint8_t page)
 
         drawValBar(params[i + index], bitmap_x);
         Display::drawString(names[i + index], string_x, 11);
-        Display::drawFloat(params[i + index], bitmap_x + 5, 12);
+        Display::printf(bitmap_x + 8 , 12, "%d", (int)(params[i + index]*100));
 
      }
     if (page == 0)

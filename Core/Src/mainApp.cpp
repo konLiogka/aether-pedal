@@ -11,22 +11,32 @@
 #include "qspi_flash.hpp"
 #include <cstdio>
 
+// External ADC values updated by TIM8 interrupt
+extern uint32_t potValues[3];
 
-#define BUFFER_SIZE 1024
-uint16_t adc_buf[BUFFER_SIZE];
-uint16_t dac_buf[BUFFER_SIZE];
+ 
+
+
+
+EffectsChain loadedChain;
+uint8_t i = 0;
+uint8_t bPressed = 0;
+
+ 
+
  
 void mainApp(void)
 {
-	// HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_buf, BUFFER_SIZE);
 	// HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t*)dac_buf, BUFFER_SIZE, DAC_ALIGN_12B_R);
 
     Display::init();
     Display::clear();
     Display::drawBitmap(base_chain_bitmap, 0, 0);
     
+ 
     if(QSPIFlash::init() != HAL_OK)
     {
+        Display::displayError("QSPI Flash", QSPIFlash::init() );
         Error_Handler();
     }
 
@@ -37,30 +47,26 @@ void mainApp(void)
     chain.setPedal(2, PedalType::ECHO);
     chain.setPedal(3, PedalType::PASS_THROUGH);
 
-    chain.draw();
-
-    HAL_Delay(1000);
-
     if (QSPIFlash::saveEffectsChain(&chain) != HAL_OK) {
+        Display::displayError("QSPI save Flash", QSPIFlash::saveEffectsChain(&chain)  );
         Error_Handler();
     }
-    
-    EffectsChain loadedChain;
 
     if (QSPIFlash::loadEffectsChain(&loadedChain) != HAL_OK) {
+        Display::displayError("QSPI load Flash", QSPIFlash::loadEffectsChain(&loadedChain)  );
         Error_Handler();
     }
     HAL_Delay(2000);
 
+    loadedChain.draw();
+    loadedChain.selectedPedal = 0;
 
-    uint8_t i=0;
+    
+
     while(true)
     {
-        loadedChain.selectedPedal = i;
-        displaySelectedPedal(&loadedChain);
-        i = (i + 1) % (static_cast<uint8_t>(PedalType::PASS_THROUGH) + 1);
+        HAL_Delay(10);
 
-        HAL_Delay(1000);
 
         if(i==3)
         {
@@ -80,6 +86,38 @@ void mainApp(void)
 }
 
 
+
+extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    static uint32_t last_tick = 0;
+    if (GPIO_Pin == GPIO_PIN_0)
+    {
+        uint32_t tick = HAL_GetTick();
+        if ((tick - last_tick) > 150)  
+        {
+            if(bPressed==0)
+            {
+            displaySelectedPedal(&loadedChain); 
+            bPressed++;
+
+            }
+            else if(bPressed==1)
+            {
+                displayPedalSettings(loadedChain.getPedal(loadedChain.selectedPedal), 0);  
+                bPressed++;
+            }
+            else
+            {
+                Display::drawBitmap(base_chain_bitmap, 0, 0);
+                loadedChain.draw();
+                loadedChain.selectedPedal = 0;
+                bPressed=0;
+            }
+
+            last_tick = tick;
+        }
+    }
+}
 
 
 
