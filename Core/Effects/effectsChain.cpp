@@ -14,6 +14,13 @@ EffectsChain::~EffectsChain() {
     }
 }
 
+void EffectsChain::clear() {
+    for (int i = 0; i < 4; ++i) {
+        delete pedals[i];
+        pedals[i] = Pedal::createPedal(PedalType::PASS_THROUGH);
+    }
+}
+
 void EffectsChain::setPedal(int index, PedalType type) {
     if (index < 0 || index >= 4) return;
 
