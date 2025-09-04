@@ -8,9 +8,8 @@
 #define PEDAL_NAME_MAX_LENGTH 10 
 
 
-void displaySelectedPedal(EffectsChain *selectedChain)
+void displaySelectedPedal(Pedal *pedal)
 {
-    auto* pedal = selectedChain->getPedal(selectedChain->selectedPedal);
     const Bitmap& bmp = pedal->getImage();
     const char* name  = pedal->getName();
     Display::clear();

@@ -36,53 +36,7 @@ ADC_HandleTypeDef hadc2;
 DMA_HandleTypeDef hdma_adc2;
 uint8_t err_code = 0;
 
-#define BUFFER_SIZE 1024
-uint16_t adc_buf[BUFFER_SIZE] __attribute__((aligned(4)));  // Add memory alignment for DMA
-uint16_t dac_buf[BUFFER_SIZE];
 
-uint32_t potValues[3]; // ADC buffer - keeping as uint32_t for compatibility
-uint16_t adc2_dma_buffer[3]; // DMA buffer for ADC2 (16-bit)
-
- /**
- * @brief Timer8 period elapsed callback - called every 100ms
- */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-    if (htim->Instance == TIM8) {
-        // Your ADC reading code goes here
-        for (int channel = 0; channel < 3; channel++) {
-            // Configure ADC2 for the current channel
-            ADC_ChannelConfTypeDef sConfig = {0};
-            switch(channel) {
-                case 0: sConfig.Channel = ADC_CHANNEL_14; break; // PA2
-                case 1: sConfig.Channel = ADC_CHANNEL_15; break; // PA3
-                case 2: sConfig.Channel = ADC_CHANNEL_18; break; // PA4  
-            }
-            sConfig.Rank = ADC_REGULAR_RANK_1;
-            sConfig.SamplingTime = ADC_SAMPLETIME_810CYCLES_5;
-            sConfig.SingleDiff = ADC_SINGLE_ENDED;
-            sConfig.OffsetNumber = ADC_OFFSET_NONE;
-            sConfig.Offset = 0;
-            
-            HAL_ADC_ConfigChannel(&hadc2, &sConfig);
-            
-            HAL_ADC_Start(&hadc2);
-            if (HAL_ADC_PollForConversion(&hadc2, 10) == HAL_OK) {
-                uint32_t rawValue = HAL_ADC_GetValue(&hadc2);
-                // Scale from 0-4095 to 0-100, then quantize to steps of 5
-                uint32_t scaledValue = (rawValue * 100) / 4095;
-                potValues[channel] = (scaledValue / 5) * 5; // Round to nearest multiple of 5
-            }
-            Display::clear();
-            Display::printf(10,3, "POT1: %d",potValues[0] );
-            Display::printf(10,4, "POT2: %d",potValues[1] );
-            Display::printf(10,5, "POT3: %d",potValues[2] );
-            HAL_ADC_Stop(&hadc2);
-        }
-    }
-}
-
-// Add these handlers to your main.cpp:
 extern "C" void TIM8_UP_TIM13_IRQHandler(void)
 {
     HAL_TIM_IRQHandler(&htim8);
@@ -133,11 +87,9 @@ int main(void)
     }
 
     MPU_Config();
- 
-
 
     /* Call main application */
-    // mainApp();
+    mainApp();
 
     while (1) { /* Should never reach this while */ asm("nop"); }
 }
@@ -388,8 +340,6 @@ void MX_ADC1_Init(void)
 
 void MX_ADC2_Init(void)
 {
-    ADC_ChannelConfTypeDef sConfig = {0};
-    
     // ADC2 Configuration for polling mode
     hadc2.Instance = ADC2;
     hadc2.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV4;

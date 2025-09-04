@@ -11,20 +11,21 @@
 #include "qspi_flash.hpp"
 #include <cstdio>
 
-// External ADC values updated by TIM8 interrupt
-extern uint32_t potValues[3];
-
- 
-
-
-
+enum class displayView {
+    PEDALCHAIN_VIEW,
+    PEDALSELECT_VIEW,
+    PEDALEDIT_VIEW,
+};  
 EffectsChain loadedChain;
-uint8_t i = 0;
-uint8_t bPressed = 0;
+displayView currentView =  displayView::PEDALCHAIN_VIEW;
 
- 
+#define BUFFER_SIZE 1024
+uint16_t adc_buf[BUFFER_SIZE] __attribute__((aligned(4)));  
+uint16_t dac_buf[BUFFER_SIZE] __attribute__((aligned(4))); 
 
- 
+uint32_t potValues[3]; 
+Pedal* selectedPedal =  Pedal::createPedal(PedalType::PASS_THROUGH);
+
 void mainApp(void)
 {
 	// HAL_DAC_Start_DMA(&hdac1, DAC_CHANNEL_1, (uint32_t*)dac_buf, BUFFER_SIZE, DAC_ALIGN_12B_R);
@@ -56,36 +57,20 @@ void mainApp(void)
         Display::displayError("QSPI load Flash", QSPIFlash::loadEffectsChain(&loadedChain)  );
         Error_Handler();
     }
-    HAL_Delay(2000);
 
     loadedChain.draw();
     loadedChain.selectedPedal = 0;
+    selectedPedal = loadedChain.getPedal(loadedChain.selectedPedal); 
 
-    
+    currentView = displayView::PEDALCHAIN_VIEW;
 
     while(true)
     {
-        HAL_Delay(10);
-
-
-        if(i==3)
-        {
-            Display::setBrightness(0x40);
-
-            displayPedalSettings(loadedChain.getPedal(0), 0);  
-            HAL_Delay(4000);
-            displayPedalSettings(loadedChain.getPedal(0), 1);
-            Display::setBrightness(0x10);
-            HAL_Delay(4000);
-
-
-        }
+        HAL_Delay(100);
     }
       
 
 }
-
-
 
 extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
@@ -95,23 +80,25 @@ extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
         uint32_t tick = HAL_GetTick();
         if ((tick - last_tick) > 150)  
         {
-            if(bPressed==0)
+            switch(currentView)
             {
-            displaySelectedPedal(&loadedChain); 
-            bPressed++;
+                case displayView::PEDALCHAIN_VIEW:
+                    displaySelectedPedal(selectedPedal); 
+                    currentView = displayView::PEDALSELECT_VIEW;
+                    break;
+                    
+                case displayView::PEDALSELECT_VIEW:
+                    Display::drawBitmap(mod_pedal_bitmap, 0, 0);
 
-            }
-            else if(bPressed==1)
-            {
-                displayPedalSettings(loadedChain.getPedal(loadedChain.selectedPedal), 0);  
-                bPressed++;
-            }
-            else
-            {
-                Display::drawBitmap(base_chain_bitmap, 0, 0);
-                loadedChain.draw();
-                loadedChain.selectedPedal = 0;
-                bPressed=0;
+                    displayPedalSettings(selectedPedal, 0);
+                    currentView = displayView::PEDALEDIT_VIEW;
+                    break;
+                    
+                case displayView::PEDALEDIT_VIEW:
+                    Display::drawBitmap(base_chain_bitmap, 0, 0);
+                    loadedChain.draw();
+                    currentView = displayView::PEDALCHAIN_VIEW;
+                    break;
             }
 
             last_tick = tick;
@@ -119,6 +106,59 @@ extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     }
 }
 
+void displayVolume(void)
+{
+    
+}
 
+extern "C"  void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim->Instance == TIM8) {
+        for (int channel = 0; channel < 3; channel++) {
+            ADC_ChannelConfTypeDef sConfig = {0};
+            switch(channel) {
+                case 0: sConfig.Channel = ADC_CHANNEL_18; break; // PA2
+                case 1: sConfig.Channel = ADC_CHANNEL_14; break; // PA3
+                case 2: sConfig.Channel = ADC_CHANNEL_15; break; // PA4  
+            }
+            sConfig.Rank = ADC_REGULAR_RANK_1;
+            sConfig.SamplingTime = ADC_SAMPLETIME_810CYCLES_5;
+            sConfig.SingleDiff = ADC_SINGLE_ENDED;
+            sConfig.OffsetNumber = ADC_OFFSET_NONE;
+            sConfig.Offset = 0;
+            
+            HAL_ADC_ConfigChannel(&hadc2, &sConfig);
+            
+            HAL_ADC_Start(&hadc2);
+            if (HAL_ADC_PollForConversion(&hadc2, 10) == HAL_OK) {
+                uint32_t rawValue = HAL_ADC_GetValue(&hadc2);
+                potValues[channel] = (((rawValue * 20) >> 12) * 5) + 5;}    
+            HAL_ADC_Stop(&hadc2);
+        }
+        switch(currentView)
+        {
+            case displayView::PEDALCHAIN_VIEW:
+                displayVolume();
+                break;
+                
+            case displayView::PEDALSELECT_VIEW:
+                displayVolume();
+                break;
+                
+            case displayView::PEDALEDIT_VIEW:
+            float* params = new float[selectedPedal->getMemberSize()];
+            selectedPedal->getParams(params);
+                if (potValues[0] != params[0] * 100 || 
+                    potValues[1] != params[1] * 100 || 
+                    potValues[2] != params[2] * 100 ) {
+                    changePedalSettings(selectedPedal, 0, potValues);
+                }
+                break;
+        }
+
+
+         
+    }
+}
 
 
